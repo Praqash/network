@@ -1,0 +1,404 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<h3>All Post</h3>
+
+{% if user.is_authenticated %}
+
+<form class = "myForm" action="{% url 'com'  %}" method="POST">
+    {% csrf_token %}
+    
+<div class="card shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;" >
+    <h3>New Post</h3>
+          
+        <textarea id = "txt" name = "comment"  class="card-body shadow p-2 mb-7 bg-body rounded w-auto p-3 border-top border border-1" required >
+        </textarea>
+    <button id= "btSubmit" style="font-size: 50px ;" class="btn btn-primary w-auto fa fa-send-o border border-2" type="submit"  name = 'post_id' value= "{{post.id}}"></button>
+</div>
+
+</form>
+{% for posts in posts %}
+{% if request.user in posts.likes.all %}
+
+<div id="{{posts.id}}"style= "animation-name: hide;
+animation-duration: 1s;
+animation-fill-mode: forwards;
+animation-play-state: paused;">   
+    <div class="shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;">
+    <div>
+        <strong><a class="p" href= "{% url 'profile' posts.username %}">{{ posts.username }}</a></strong>
+     
+        {% if request.user == posts.username %}
+        <i data-trash="{{ posts.id }}" valueT= "{{posts.id}}" id = "trash{{posts.id}}" style="color:gray; position:absolute; left: 92%;" class="fas fa-trash-alt"></i>
+        <i data-edit="{{ posts.id }}" valueE= "{{posts.id}}" id = "edit{{posts.id}}" style="color:gray; position:absolute; left: 94%;" class="fas fa-edit"></i>
+        {% endif %}
+        <hr> 
+        <div id = "c{{posts.id}}" contenteditable="false">
+            <h5>{{ posts.content }}</h5>
+        </div>
+        <br><br>
+        <h6><small>{{posts.timestamp}}</small></h6>
+        
+    <div>
+           
+            <div>
+                <div style="color:red;" id = "like{{posts.id}}" class="fas fa-heart" data-catid="{{ posts.id }}" value= "{{posts.id}}" ></div>
+
+                <span id= "like_count{{posts.id}}">{{posts.like_count}}</span>
+                <div>
+                <button class ="bt2 btn-primary" type = "submit" data-cancel="{{ posts.id }}" id = "b1{{posts.id}}" style="display: none; position:relative; outline: none; border-radius: 2px; left: 91%;">Cancel</button>
+
+                <button class ="bt1 btn-primary" type = "submit" data-save="{{ posts.id }}" id = "b{{posts.id}}" style="display: none; position:relative;outline: none; border-radius: 2px;  left: 92%;">Save</button>
+            </div>
+            </div>
+                
+            
+    </div>
+    </div>
+    </div>
+</div>
+   
+
+
+{% else %}
+
+<div id="{{posts.id}}"style= "animation-name: hide;
+animation-duration: 2s;
+animation-fill-mode: forwards;
+animation-play-state: paused;">   
+    <div class="shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;">
+    <div>
+        <strong><a class="p" href= "{% url 'profile' posts.username %}">{{ posts.username }}</a></strong>
+     
+        {% if request.user == posts.username %}
+        <i data-trash="{{ posts.id }}" valueT= "{{posts.id}}" id = "trash{{posts.id}}" style="color:gray; position:absolute; left: 92%;" class="fas fa-trash-alt"></i>
+        <i data-edit="{{ posts.id }}" valueE= "{{posts.id}}" id = "edit{{posts.id}}" style="color:gray; position:absolute; left: 94%;" class="fas fa-edit"></i>
+        {% endif %}
+        <hr> 
+        
+        <div id = "c{{posts.id}}" contenteditable="false">
+            <h5>{{ posts.content }}</h5>
+            </div>
+        <br><br>
+        <h6><small>{{posts.timestamp}}</small></h6>
+        
+    <div>
+           
+            <div>
+                <div id = "like{{posts.id}}" class="fas fa-heart" data-catid="{{ posts.id }}" value= "{{posts.id}"} ></div>
+
+                <span id= "like_count{{posts.id}}">{{posts.like_count}}</span>
+                <div>
+                <button class ="bt2 btn-primary" type = "submit" data-cancel="{{ posts.id }}" id = "b1{{posts.id}}" style="display: none; position:relative; outline: none; border-radius: 2px; left: 91%;">Cancel</button>
+
+                <button class ="bt1 btn-primary" type = "submit" data-save="{{ posts.id }}" id = "b{{posts.id}}" style="display: none; position:relative;outline: none; border-radius: 2px;  left: 92%;">Save</button>
+            </div>
+            </div>
+                
+            
+    </div>
+    </div>
+    </div>
+</div>
+   
+
+{% endif %}
+{% endfor %}
+
+
+{% else %}
+{% for posts in posts %}
+<div id="{{posts.id}}"style= "animation-name: hide;
+animation-duration: 2s;
+animation-fill-mode: forwards;
+animation-play-state: paused;">   
+<div class="shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;">
+<div>
+    <strong><a class="p" href= "{% url 'profile' posts.username %}">{{ posts.username }}</a></strong>
+          
+      <hr> 
+        
+        <div id = "c{{posts.id}}" contenteditable="false">
+            <h5>{{ posts.content }}</h5>
+        </div>
+    <br><br>
+    <h6><small>{{posts.timestamp}}</small></h6>
+    
+<div>
+     
+    <div>
+        <div id = "like{{posts.id}}" class="fas fa-heart"  data-catid="{{ posts.id }}" value= "{{posts.id}}" ></div>
+        <span id= "like_count{{posts.id}}">{{posts.like_count}}</span>
+        <div>
+        <button class ="bt2 btn-primary" type = "submit" data-cancel="{{ posts.id }}" id = "b1{{posts.id}}" style="display: none; position:relative; outline: none; border-radius: 2px;  left: 91%;">Cancel</button>
+        <button class ="bt1 btn-primary" type = "submit" data-save="{{ posts.id }}" id = "b{{posts.id}}" style="display: none; position:relative; outline: none; border-radius: 2px;  left: 92%;">Save</button>
+        </div>
+    </div>
+            
+        
+</div>
+</div>
+</div>
+</div>
+{% endfor %}
+
+{% endif %}
+
+<style>
+    textarea:focus, select:focus{
+        outline: none;
+        border: none;
+    }
+    
+    .fas{
+        font-size: 20px;
+        color :#D3D3D3;
+        
+    }
+    .fas:hover{
+    color: red;
+        cursor: pointer;
+
+    }
+
+    .bt1{
+ 
+ outline-color: none;
+ box-shadow: none;
+ background-color: #4d90fe;
+ background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -moz-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -ms-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -o-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: linear-gradient(top,#4d90fe,#4787ed);
+ border: 1px solid #3079ed;
+ color: #fff;
+ font-size: 11px;
+ }
+ .bt2{
+ 
+ outline-color: none;
+ box-shadow: none;
+ background-color: #4d90fe;
+ background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -moz-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -ms-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: -o-linear-gradient(top,#4d90fe,#4787ed);
+ background-image: linear-gradient(top,#4d90fe,#4787ed);
+ border: 1px solid #3079ed;
+ color: #fff;
+ font-size: 11px;
+ }
+
+ .bt1:hover{
+   
+
+   cursor: pointer;
+   background-color: rgb(34, 34, 238);
+   
+ 
+ }
+
+ .bt2:hover{
+   
+
+   cursor: pointer;
+   background-color: rgb(34, 34, 238);
+   
+ 
+ }
+    
+
+    [contenteditable] {
+  outline: 0px solid transparent;
+}
+
+    @keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+        
+    }
+    75% {
+        opacity: 0;
+        height: 100%;
+        line-height: 100%;
+        
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+        line-height: 0px;
+        
+    }
+}
+
+
+</style>
+<script>
+    
+    const submit = document.querySelector('#btSubmit');
+    const comment = document.querySelector('#txt');
+    submit.disabled = true;
+    comment.onkeyup = () => {
+            if (comment.value.trim() > 0 || comment.value.trim() != "" ) {
+                submit.disabled = false;
+            }
+            else {
+                submit.disabled = true;
+            }
+        }
+    
+        
+
+    $('.fas').click(function(){ 
+    var id; 
+    id = $(this).attr("data-trash"); 
+    $('#trashForm').trigger("reset");
+    
+      $(document).on('click', '#trash{{posts.id}}', function (e) {
+        e.preventDefault()});
+    
+        
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "trash" %}', 
+        data:{ 
+                 post_d: id 
+    }, success: function(json)
+    {
+        
+            document.getElementById(json['data']).style.animationPlayState = 'running';
+            document.getElementById(json['data']).addEventList
+    }
+    
+    
+    })});
+       
+        $('.fas').click(function(){ 
+    var id; 
+    id = $(this).attr("data-catid"); 
+    $('#myForm').trigger("reset");
+    
+      $(document).on('click', '#like-button', function (e) {
+        e.preventDefault()});
+    
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "like" %}', 
+        data:{ 
+                 post_i: id 
+    }, 
+    success: function(json) 
+    {   
+        console.log(json['result'])
+        document.getElementById("like_count"+id).innerHTML = json['result']
+        document.getElementById("like"+id).style.color = json['val'];
+    
+    }
+    })});
+
+
+
+    $('.bt2').click(function(){ 
+    var i; 
+    i = $(this).attr("data-cancel"); 
+    $('#editForm').trigger("reset");
+    
+      $(document).on('click', '#edit{{posts.id}}', function (e) {
+        e.preventDefault()});
+        console.log(i)
+        $('#c'+i).attr('contenteditable','false');
+        document.getElementById("b"+i).style.display = "none"
+        document.getElementById("b1"+i).style.display = "none"
+   
+
+
+      });
+
+
+
+      $('.fas').click(function(){ 
+    var i; 
+    i = $(this).attr("data-edit"); 
+    $('#editForm').trigger("reset");
+    
+      $(document).on('click', '#edit{{posts.id}}', function (e) {
+        e.preventDefault()});
+        console.log('c'+i)
+        $('#c'+i).attr('contenteditable','true');
+        $("#c"+i).focus();
+        $('b'+i).attr('style.display','block');
+        $('b1'+i).attr('style.display','block');
+        document.getElementById("b"+i).style.display = "inline-block"
+        document.getElementById("b1"+i).style.display = "inline-block"
+   
+       
+    
+    
+    });
+
+
+
+
+
+
+
+
+
+
+
+    $('.bt1').click(function(){ 
+    let id; 
+    let po;
+    
+    n = $(this).attr("data-save"); 
+    po = document.querySelector('h5').innerHTML;
+    $('#editForm').trigger("reset");
+    
+      $(document).on('click', '#b{{posts.id}}', function (e) {
+        e.preventDefault()});
+        
+    console.log(n)
+    console.log(po)
+    
+    $.ajax( 
+    { 
+        type:"POST", 
+        url: '{% url "update" %}', 
+        data:{ 
+                 n: n,
+                 po: po,
+                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    }, 
+    success: function(json) 
+    {   
+        console.log(json['data'])
+        
+        document.querySelector('h5').innerHTML = json['data']
+        $('#c'+n).attr('contenteditable','false');
+        document.getElementById("b"+n).style.display = "none"
+        document.getElementById("b1"+n).style.display = "none"
+   
+   
+        
+    
+    }
+    })});
+
+
+
+      
+        
+    
+    
+    </script>
+    
+
+
+{% endblock %}

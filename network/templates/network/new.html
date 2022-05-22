@@ -1,0 +1,134 @@
+<i data-trash="{{ posts.id }}" valueT= "{{posts.id}}" id = "trash{{posts.id}}" style="color:gray; position:relative; left: 92%;" class="fas fa-trash-alt"></i>
+<i data-edit="{{ posts.id }}" valueE= "{{posts.id}}" id = "edit{{posts.id}}" style="color:gray; position:relative; left: 94%;" class="fas fa-edit"></i>
+        
+
+
+
+
+
+<script>
+    
+    const submit = document.querySelector('#btSubmit');
+    const comment = document.querySelector('#txt');
+    submit.disabled = true;
+    comment.onkeyup = () => {
+            if (comment.value.trim() > 0 || comment.value.trim() != "" ) {
+                submit.disabled = false;
+            }
+            else {
+                submit.disabled = true;
+            }
+        }
+    
+     
+    
+        $('#edit').click(function(){ 
+    var id; 
+    id = $(this).attr("data-edit"); 
+    $('#editForm').trigger("reset");
+    
+      $(document).on('click', '#like-button', function (e) {
+        e.preventDefault()});
+    
+        
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "edit" %}', 
+        data:{ 
+                 post_id: id 
+    }, success: function(json)
+    {}
+    
+    
+    })});
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    $('#trash').click(function(){ 
+    var id; 
+    id = $(this).attr("data-trash"); 
+    $('#trashForm').trigger("reset");
+    
+      $(document).on('click', '#like-button', function (e) {
+        e.preventDefault()});
+    
+        
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "trash" %}', 
+        data:{ 
+                 post_id: id 
+    }, success: function(json)
+    {}
+    
+    
+    })});
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+       
+        $('.fas').click(function(){ 
+    var id; 
+    id = $(this).attr("data-catid"); 
+    $('#myForm').trigger("reset");
+    
+      $(document).on('click', '#like-button', function (e) {
+        e.preventDefault()});
+    
+        
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "like" %}', 
+        data:{ 
+                 post_id: id 
+    }, 
+    success: function(json) 
+    {   
+        console.log(json['result'])
+        document.getElementById("like_count"+id).innerHTML = json['result']
+        document.getElementById("like"+id).style.color = json['val'];
+    
+      
+            
+      
+    
+    }
+    
+     })
+    
+     
+    
+    
+    });
+    
+    
+    
+    </script>
+    

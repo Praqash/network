@@ -1,0 +1,113 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+       
+
+
+
+
+        
+        
+
+        
+        {% if displaybool %}
+        
+        {% if request.user.id in l2 %}
+     
+   
+        <div>
+          <button type="button" style="margin: 5px; margin-top: 5px;" class="btn btn-primary" data-catid={{l.id}} value="{{l.id}}" id="f{{l.id}}">Followed</button>
+        </div>
+       {% elif request.user.id not in l2 %}
+ 
+       <div>
+        <button type="button" style="margin: 5px; margin-top: 5px;" class="btn btn-primary" data-catid={{l.id}} value="{{l.id}}" id="f{{l.id}}">Follow Me</button>
+      </div>
+        {% endif %}
+        
+        {% endif %}
+       
+      
+       {% for k in k %}
+    
+      <div class="shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;">
+      
+          <h5>{{k.username}}</h5>
+          
+          
+         
+          
+      
+          <hr> 
+            <strong>{{k.content}}</strong>
+            
+            
+            
+          <hr> 
+          
+
+          <br><br>
+          
+      </div>
+           
+              
+       
+        {% endfor %}  
+       
+        
+            
+   
+
+
+
+
+
+<script> 
+
+$('.btn').click(function(){ 
+    var id; 
+    id = $(this).attr("data-catid"); 
+    $('#myForm').trigger("reset");
+    
+      
+    
+    
+    $.ajax( 
+    { 
+        type:"GET", 
+        url: '{% url "follow" %}', 
+        data:{ 
+                 id: id 
+    }, 
+    success: function(json) 
+    {   
+        console.log(json['val'])
+        console.log("f"+id)
+        
+
+        
+        document.getElementById("f"+id).innerHTML = json['val'];
+       
+    }
+    })});
+        
+</script>
+
+
+{% endblock %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
