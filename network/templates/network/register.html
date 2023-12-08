@@ -2,29 +2,50 @@
 
 {% block body %}
 
-    <h2>Register</h2>
-
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
+<div style="margin-top: 10%;">
+    <h2 style="text-align: center; color: darkgrey;">Register</h2>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
     <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+            <input style="margin: 5px;border-radius: 0px;" class="form-control" autofocus type="text" name="username" placeholder="Username" required>
         </div>
         <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
+            <input style="margin: 5px; border-radius: 0px;" class="form-control" type="email" name="email" placeholder="Email Address" required>
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
+            <input style="margin: 5px; border-radius: 0px;" class="form-control" type="password" name="password" placeholder="Password" required>
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+            <input style="margin: 5px; border-radius: 0px;" class="form-control" type="password" name="confirmation" placeholder="Confirm Password" required>
         </div>
-        <input class="btn btn-primary" type="submit" value="Register">
+        <div class="form-group text-center">
+            <input style="margin: 5px; border-radius: 0px;" class="btn btn-secondary" type="submit" value="Login">
+        </div>
     </form>
-
+</div>
+</div>
+<div  style="text-align: center;">
     Already have an account? <a href="{% url 'login' %}">Log In here.</a>
-
+</div>
+</div>
+<div class="center-message">
+    {% if message %}
+        <div style="text-align: center; margin: 20px; color: darkred;" id="alertMessage" role="alert">
+           <strong>{{ message }}</strong>
+        </div>
+    {% endif %}
+</div>
+    <script>
+        // Add fade-out effect after 3 seconds
+        $(document).ready(function() {
+            setTimeout(function() {
+                $("#alertMessage").fadeOut("slow", function() {
+                    $(this).remove();
+                });
+            }, 1400);
+        });
+    </script>
 {% endblock %}

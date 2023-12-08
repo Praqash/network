@@ -1,7 +1,6 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-<h3>All Post</h3>
 
 {% if user.is_authenticated %}
 
@@ -21,7 +20,7 @@
 {% if request.user in posts.likes.all %}
 
 <div id="{{posts.id}}"style= "animation-name: hide;
-animation-duration: 1s;
+animation-duration: 2s;
 animation-fill-mode: forwards;
 animation-play-state: paused;">   
     <div class="shadow p-3 mb-5 bg-body rounded w-auto p-3 border-top border border-5"style="margin: 30px;">
@@ -213,26 +212,29 @@ animation-play-state: paused;">
   outline: 0px solid transparent;
 }
 
-    @keyframes hide {
-    0% {
-        opacity: 1;
-        height: 100%;
-        line-height: 100%;
-        
+
+
+
+
+
+@keyframes hide {
+        0% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        75% {
+            opacity: 0;
+            transform: scaleY(0.8);
+        }
+        100% {
+            opacity: 0;
+            transform: scaleY(0);
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
     }
-    75% {
-        opacity: 0;
-        height: 100%;
-        line-height: 100%;
-        
-    }
-    100% {
-        opacity: 0;
-        height: 0px;
-        line-height: 0px;
-        
-    }
-}
+
+
+
 
 
 </style>
@@ -260,23 +262,28 @@ animation-play-state: paused;">
       $(document).on('click', '#trash{{posts.id}}', function (e) {
         e.preventDefault()});
     
+
+        $.ajax({
+    type: "GET",
+    url: '{% url "trash" %}',
+    data: {
+        post_d: id
+    },
+    success: function (json) {
+        var postId = json['data'];
+        var postElement = document.getElementById(postId);
+
+        postElement.style.animation = 'hide 2s forwards';
         
-    
-    $.ajax( 
-    { 
-        type:"GET", 
-        url: '{% url "trash" %}', 
-        data:{ 
-                 post_d: id 
-    }, success: function(json)
-    {
-        
-            document.getElementById(json['data']).style.animationPlayState = 'running';
-            document.getElementById(json['data']).addEventList
+        // Wait for the animation to complete and then remove the element
+        postElement.addEventListener('animationend', function () {
+            postElement.remove();
+        });
     }
-    
-    
-    })});
+});
+
+
+   });
        
         $('.fas').click(function(){ 
     var id; 
@@ -346,13 +353,6 @@ animation-play-state: paused;">
 
 
 
-
-
-
-
-
-
-
     $('.bt1').click(function(){ 
     let id; 
     let po;
@@ -383,22 +383,10 @@ animation-play-state: paused;">
         document.querySelector('h5').innerHTML = json['data']
         $('#c'+n).attr('contenteditable','false');
         document.getElementById("b"+n).style.display = "none"
-        document.getElementById("b1"+n).style.display = "none"
-   
-   
-        
+        document.getElementById("b1"+n).style.display = "none"     
     
     }
     })});
-
-
-
-      
-        
-    
-    
     </script>
-    
-
 
 {% endblock %}

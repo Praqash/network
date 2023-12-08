@@ -6,10 +6,25 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import*
-import json
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Profile
+from .forms import ProfileForm 
+from django.contrib import messages
+from django.http import JsonResponse
+from django.db import IntegrityError
+
 
 def index(request):
-    context={'posts': Post.objects.all().order_by('-timestamp')}
+    user = User.objects.filter(username=request.user.username).first()
+    if hasattr(user, 'profile'):
+        context={'posts': Post.objects.all().order_by('-timestamp'), 'profile_picture' : user.profile.profile_picture}
+    else:
+        context={'posts': Post.objects.all().order_by('-timestamp')}
     return render(request, "network/index.html", context)
 
 def layout(request):
@@ -19,37 +34,51 @@ def layout(request):
 
 def profile(request, **kwargs):
     l2=[]
+    l3=[]
     id = kwargs.get('username')
-    k= Post.objects.filter(username__username=id)
+    k= Post.objects.filter(username__username=id).order_by("-timestamp")
     l= get_object_or_404(User, username=id)
     length= (l.followed.all().values('id'))
+    post= Post.objects.all().filter(username=request.user)
+    user = User.objects.filter(username=request.user.username).first()
+    for i in (post):
+        l3.append([i.like_count, i.id])
     for i in range(len(length)):
         l2.append((length[i]['id']))
-   
-
     displaybool = str(request.user) != str(id)
     followbool = str(l.followed.all) != None
-    context= {'k' : k, 'l':l ,'displaybool':displaybool, 'followbool':followbool, 'l2':l2}
+    if hasattr(user, 'profile'):
+        context={'k' : k, 'l':l ,'displaybool':displaybool, 'followbool':followbool, 'l2':l2, 'l3':l3, 'posts': Post.objects.all().order_by('-timestamp'), 'profile_picture' : user.profile.profile_picture}
+    else:
+        context= {'k' : k, 'l':l ,'displaybool':displaybool, 'followbool':followbool, 'l2':l2, 'l3':l3 }
     return render(request, "network/profile.html", context )
 
+
 def follow(request):
-    id = request.GET['id']
-    print(id)
-    post= get_object_or_404(User, id=id)
-    print(post)
-    if post.followed.filter(id=request.user.id).exists():
-        post.followed.remove(request.user.id)
-        post.save()
-        return JsonResponse({'val':"Follow Me"})
-        
-    else:
-        
-        post.followed.add(request.user.id)
-        post.save()
-        return JsonResponse({'val':"Followed"})
-    
-        
-          
+    user_id = request.GET.get('id', None)
+
+    if not user_id:
+        return JsonResponse({'error': 'User ID not provided'})
+
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid User ID'})
+
+    user_to_follow = get_object_or_404(User, id=user_id)
+
+    try:
+        if user_to_follow.followed.filter(id=request.user.id).exists():
+            user_to_follow.followed.remove(request.user)
+            user_to_follow.save()
+            return JsonResponse({'val': "Follow Me"})
+        else:
+            user_to_follow.followed.add(request.user)
+            user_to_follow.save()
+            return JsonResponse({'val': "Followed"})
+    except IntegrityError as e:
+        return JsonResponse({'error': str(e)})
+     
 
 def com(request):
     if request.method == "POST":
@@ -74,7 +103,6 @@ def update(request):
         id = request.POST['n']
         d = Post.objects.get(id = id)
         d.content= new_post
-        print(d.content)
         d.save()
         return JsonResponse({"data":new_post})
         
@@ -83,11 +111,7 @@ def update(request):
 
 def like(request):
     if request.method == 'GET':
-        user=(request.user)
-        print(user.id)
         pid = request.GET['post_i']
-        d = Post.objects.get(id = pid )
-        print(d)
         post= get_object_or_404(Post, id=pid)
         if post.likes.filter(id=request.user.id).exists():
             post.likes.remove(request.user)
@@ -137,6 +161,7 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
+        username = username.capitalize()
         email = request.POST["email"]
 
         # Ensure password matches confirmation
@@ -160,3 +185,34 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+
+@login_required
+def edit_profile(request):
+    try:
+        # Try to get the current user's profile
+        profile = Profile.objects.get(username=request.user)
+    except Profile.DoesNotExist:
+        # If the profile doesn't exist, create a new one
+        profile = Profile(username=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('edit_profile')
+        else:
+            messages.error(request, 'Error updating profile. Please correct the errors.')
+    else:
+        # Set the username field value before rendering the form
+        form = ProfileForm(instance=profile, initial={'username': request.user.username})
+
+    return render(request, "network/edit_profile.html", {'form': form})
+
+def show_profile_picture(request):
+    user = User.objects.filter(username=request.user.username).first()
+    print(user.profile.profile_picture)
+    context={'profile_picture' : user.profile.profile_picture}
+    return render(request, "network/show_profile_picture.html", context)
